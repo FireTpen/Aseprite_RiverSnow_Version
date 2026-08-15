@@ -67,9 +67,9 @@ Shade make_shade(const Preset& preset)
 } // namespace
 
 PixelPalettePanel::PixelPalettePanel()
-  : Box(VERTICAL)
+  : Box(ui::VERTICAL)
   , m_title("Pixel Palette Lab · 像素资产配色")
-  , m_presets(HORIZONTAL)
+  , m_presets(ui::HORIZONTAL)
   , m_bush("灌木")
   , m_tree("树冠")
   , m_water("水体")
