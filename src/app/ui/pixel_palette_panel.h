@@ -9,6 +9,7 @@
 #pragma once
 
 #include "app/ui/color_shades.h"
+#include "app/ui/color_wheel.h"
 #include "app/ui/dockable.h"
 #include "ui/box.h"
 #include "ui/button.h"
@@ -29,6 +30,9 @@ public:
 private:
   void setPreset(int presetIndex);
   void onShadeClick(ColorShades::ClickEvent& ev);
+  void onWheelColor(const app::Color& color, ui::MouseButton button);
+  void regenerateRoles(const app::Color& baseColor);
+  void onSizeHint(ui::SizeHintEvent& ev) override;
 
   ui::Label m_title;
   ui::Box m_presets;
@@ -37,10 +41,12 @@ private:
   ui::Button m_water;
   ui::Button m_grass;
   ui::Button m_earth;
+  ColorWheel m_wheel;
   ColorShades m_shades;
   ui::Label m_roleHint;
   ui::Label m_usageHint;
   int m_presetIndex = 0;
+  app::Color m_baseColor;
 };
 
 } // namespace app

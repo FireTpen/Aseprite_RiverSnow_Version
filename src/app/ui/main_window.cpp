@@ -53,6 +53,8 @@
 #include "ui/system.h"
 #include "ui/view.h"
 
+#include <algorithm>
+
 #ifdef ENABLE_SCRIPTING
   #include "app/ui/devconsole_view.h"
 #endif
@@ -399,16 +401,18 @@ void MainWindow::setDefaultLayout()
   m_timelineResizeConn.disconnect();
   m_colorBarResizeConn.disconnect();
 
-  const auto colorBarWidth = get_config_double(kLegacyLayoutMainWindowSection,
-                                               kLegacyLayoutColorBarSplitter,
-                                               m_colorBar->sizeHint().w);
+  const auto colorBarWidth = std::max(
+    get_config_double(kLegacyLayoutMainWindowSection,
+                      kLegacyLayoutColorBarSplitter,
+                      m_colorBar->sizeHint().w),
+    260.0 * ui::guiscale());
 
   m_customizableDock->resetDocks();
   m_customizableDock->dock(ui::LEFT, m_colorBar.get(), gfx::Size(colorBarWidth, 0));
   m_customizableDock->dockRelativeTo(m_colorBar.get(),
                                      ui::BOTTOM,
                                      m_pixelPalettePanel.get(),
-                                     gfx::Size(0, 180 * ui::guiscale()));
+                                     gfx::Size(0, 360 * ui::guiscale()));
   m_customizableDock->dock(ui::BOTTOM, m_statusBar.get());
   m_customizableDock->center()->dock(ui::TOP, m_contextBar.get());
   m_customizableDock->center()->dock(ui::RIGHT, m_toolBar.get());
@@ -458,16 +462,18 @@ void MainWindow::setMirroredDefaultLayout()
   m_timelineResizeConn.disconnect();
   m_colorBarResizeConn.disconnect();
 
-  auto colorBarWidth = get_config_double(kLegacyLayoutMainWindowSection,
-                                         kLegacyLayoutColorBarSplitter,
-                                         m_colorBar->sizeHint().w);
+  auto colorBarWidth = std::max(
+    get_config_double(kLegacyLayoutMainWindowSection,
+                      kLegacyLayoutColorBarSplitter,
+                      m_colorBar->sizeHint().w),
+    260.0 * ui::guiscale());
 
   m_customizableDock->resetDocks();
   m_customizableDock->dock(ui::RIGHT, m_colorBar.get(), gfx::Size(colorBarWidth, 0));
   m_customizableDock->dockRelativeTo(m_colorBar.get(),
                                      ui::BOTTOM,
                                      m_pixelPalettePanel.get(),
-                                     gfx::Size(0, 180 * ui::guiscale()));
+                                     gfx::Size(0, 360 * ui::guiscale()));
   m_customizableDock->dock(ui::BOTTOM, m_statusBar.get());
   m_customizableDock->center()->dock(ui::TOP, m_contextBar.get());
   m_customizableDock->center()->dock(ui::LEFT, m_toolBar.get());
@@ -497,12 +503,12 @@ void MainWindow::loadUserLayout(const Layout* layout)
       m_customizableDock->dockRelativeTo(m_colorBar.get(),
                                          ui::BOTTOM,
                                          m_pixelPalettePanel.get(),
-                                         gfx::Size(0, 180 * ui::guiscale()));
+                                         gfx::Size(0, 360 * ui::guiscale()));
     }
     else {
       m_customizableDock->dock(ui::LEFT,
                                m_pixelPalettePanel.get(),
-                               gfx::Size(260 * ui::guiscale(), 180 * ui::guiscale()));
+                               gfx::Size(260 * ui::guiscale(), 360 * ui::guiscale()));
     }
   }
 
