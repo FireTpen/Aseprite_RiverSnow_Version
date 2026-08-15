@@ -38,6 +38,7 @@ class Layout;
 class LayoutSelector;
 class MainMenuBar;
 class Notifications;
+class PixelPalettePanel;
 class PreviewEditorWindow;
 class StatusBar;
 class Timeline;
@@ -148,6 +149,7 @@ private:
   std::unique_ptr<LayoutSelector> m_layoutSelector;
   std::unique_ptr<StatusBar> m_statusBar;
   std::unique_ptr<ColorBar> m_colorBar;
+  std::unique_ptr<PixelPalettePanel> m_pixelPalettePanel;
   std::unique_ptr<ContextBar> m_contextBar;
   std::unique_ptr<ToolBar> m_toolBar;
   std::unique_ptr<WorkspaceTabs> m_tabsBar;
