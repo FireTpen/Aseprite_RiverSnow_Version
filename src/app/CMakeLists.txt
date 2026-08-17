@@ -606,7 +606,6 @@ target_sources(app-lib PRIVATE
   ui/color_bar.cpp
   ui/color_button.cpp
   ui/color_popup.cpp
-  ui/pixel_palette_panel.cpp
   ui/color_selector.cpp
   ui/color_shades.cpp
   ui/color_sliders.cpp

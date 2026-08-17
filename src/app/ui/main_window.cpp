@@ -32,7 +32,6 @@
 #include "app/ui/layout_selector.h"
 #include "app/ui/main_menu_bar.h"
 #include "app/ui/notifications.h"
-#include "app/ui/pixel_palette_panel.h"
 #include "app/ui/preview_editor.h"
 #include "app/ui/skin/skin_property.h"
 #include "app/ui/skin/skin_theme.h"
@@ -52,8 +51,6 @@
 #include "ui/splitter.h"
 #include "ui/system.h"
 #include "ui/view.h"
-
-#include <algorithm>
 
 #ifdef ENABLE_SCRIPTING
   #include "app/ui/devconsole_view.h"
@@ -138,7 +135,6 @@ void MainWindow::initialize()
   m_workspace = std::make_unique<Workspace>();
   m_previewEditor = std::make_unique<PreviewEditorWindow>();
   m_colorBar = std::make_unique<ColorBar>(m_tooltipManager);
-  m_pixelPalettePanel = std::make_unique<PixelPalettePanel>();
   m_contextBar = std::make_unique<ContextBar>(m_tooltipManager, m_colorBar.get());
 
   // The timeline (AniControls) tooltips will use the keyboard
@@ -155,7 +151,6 @@ void MainWindow::initialize()
   m_contextBar->setVisible(false);
   m_statusBar->setExpansive(true);
   m_colorBar->setExpansive(true);
-  m_pixelPalettePanel->setExpansive(true);
   m_toolBar->setExpansive(true);
   m_tabsBar->setExpansive(true);
   m_timeline->setExpansive(true);
@@ -165,7 +160,6 @@ void MainWindow::initialize()
   // IDs to create UI layouts from a Dock (see app::Layout
   // constructor).
   m_colorBar->setId("colorbar");
-  m_pixelPalettePanel->setId("pixel-palette-lab");
   m_contextBar->setId("contextbar");
   m_statusBar->setId("statusbar");
   m_timeline->setId("timeline");
@@ -401,18 +395,12 @@ void MainWindow::setDefaultLayout()
   m_timelineResizeConn.disconnect();
   m_colorBarResizeConn.disconnect();
 
-  const auto colorBarWidth = std::max(
-    get_config_double(kLegacyLayoutMainWindowSection,
-                      kLegacyLayoutColorBarSplitter,
-                      m_colorBar->sizeHint().w),
-    260.0 * ui::guiscale());
+  const auto colorBarWidth = get_config_double(kLegacyLayoutMainWindowSection,
+                                               kLegacyLayoutColorBarSplitter,
+                                               m_colorBar->sizeHint().w);
 
   m_customizableDock->resetDocks();
   m_customizableDock->dock(ui::LEFT, m_colorBar.get(), gfx::Size(colorBarWidth, 0));
-  m_customizableDock->dockRelativeTo(m_colorBar.get(),
-                                     ui::BOTTOM,
-                                     m_pixelPalettePanel.get(),
-                                     gfx::Size(0, 360 * ui::guiscale()));
   m_customizableDock->dock(ui::BOTTOM, m_statusBar.get());
   m_customizableDock->center()->dock(ui::TOP, m_contextBar.get());
   m_customizableDock->center()->dock(ui::RIGHT, m_toolBar.get());
@@ -462,18 +450,12 @@ void MainWindow::setMirroredDefaultLayout()
   m_timelineResizeConn.disconnect();
   m_colorBarResizeConn.disconnect();
 
-  auto colorBarWidth = std::max(
-    get_config_double(kLegacyLayoutMainWindowSection,
-                      kLegacyLayoutColorBarSplitter,
-                      m_colorBar->sizeHint().w),
-    260.0 * ui::guiscale());
+  auto colorBarWidth = get_config_double(kLegacyLayoutMainWindowSection,
+                                         kLegacyLayoutColorBarSplitter,
+                                         m_colorBar->sizeHint().w);
 
   m_customizableDock->resetDocks();
   m_customizableDock->dock(ui::RIGHT, m_colorBar.get(), gfx::Size(colorBarWidth, 0));
-  m_customizableDock->dockRelativeTo(m_colorBar.get(),
-                                     ui::BOTTOM,
-                                     m_pixelPalettePanel.get(),
-                                     gfx::Size(0, 360 * ui::guiscale()));
   m_customizableDock->dock(ui::BOTTOM, m_statusBar.get());
   m_customizableDock->center()->dock(ui::TOP, m_contextBar.get());
   m_customizableDock->center()->dock(ui::LEFT, m_toolBar.get());
@@ -494,22 +476,6 @@ void MainWindow::loadUserLayout(const Layout* layout)
   if (!layout->loadLayout(m_customizableDock)) {
     LOG(WARNING, "Layout %s failed to load, resetting to default.\n", layout->id().c_str());
     setDefaultLayout();
-  }
-
-  // Existing user layouts predate Pixel Palette Lab. Add the panel beside the
-  // native color bar instead of requiring artists to reset their workspace.
-  if (!m_pixelPalettePanel->parent()) {
-    if (m_colorBar->parent()) {
-      m_customizableDock->dockRelativeTo(m_colorBar.get(),
-                                         ui::BOTTOM,
-                                         m_pixelPalettePanel.get(),
-                                         gfx::Size(0, 360 * ui::guiscale()));
-    }
-    else {
-      m_customizableDock->dock(ui::LEFT,
-                               m_pixelPalettePanel.get(),
-                               gfx::Size(260 * ui::guiscale(), 360 * ui::guiscale()));
-    }
   }
 
   this->layout();
